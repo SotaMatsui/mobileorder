@@ -31,7 +31,7 @@ model MenuItem {
   id          String      @id @default(cuid())
   name        String
   description String?
-  price       Decimal
+  price       Int
   imageUrl    String?
   isAvailable Boolean     @default(true)
   createdAt   DateTime    @default(now())
@@ -52,7 +52,7 @@ model Order {
   id          String      @id @default(cuid())
   customerId  String
   staffId     String
-  totalAmount Decimal
+  totalAmount Int
   status      OrderStatus @default(PENDING)
   orderDate   DateTime    @default(now())
   createdAt   DateTime    @default(now())
