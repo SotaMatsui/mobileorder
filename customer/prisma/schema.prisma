@@ -45,24 +45,20 @@ model Staff {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders    Order[]
 }
 
 model Order {
   id          String      @id @default(cuid())
   customerId  String
-  staffId     String
   totalAmount Int
   status      OrderStatus @default(PENDING)
   orderDate   DateTime    @default(now())
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   customer    Customer    @relation(fields: [customerId], references: [id])
-  staff       Staff       @relation(fields: [staffId], references: [id])
   orderItems  OrderItem[]
 
   @@index([customerId])
-  @@index([staffId])
 }
 
 model OrderItem {
