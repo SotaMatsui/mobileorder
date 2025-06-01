@@ -1,3 +1,4 @@
+import { Customer } from '@prisma/client';
 import { NextAuthConfig } from 'next-auth';
 
 const publicRoutes = ['/'];
@@ -10,8 +11,18 @@ export const authConfig = {
     signIn: '/login',
     newUser: '/register',
     error: '/auth-failed',
-  },
+  },  //  By default, the `id` property does not exist on `session`. See the [TypeScript](https://authjs.dev/getting-started/typescript) on how to add it.
   callbacks: {
+    jwt({ token, user }) {
+      if (user) { // User is available during sign-in
+        token.id = user.id
+      }
+      return token
+    },
+    session({ session, token }) {
+      session.user.id = token.id as Customer["id"]; // Ensure the id is a string
+      return session
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isAuthRoute = authRoutes.includes(nextUrl.pathname);
