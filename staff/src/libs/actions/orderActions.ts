@@ -48,3 +48,48 @@ export async function updateOrderStatus(order: Order, status: OrderStatus) {
     return "エラー: " + error;
   }
 }
+
+export async function upsertOrDeleteMenuItems(
+  itemsToCreate: Prisma.MenuItemCreateManyInput[],
+  itemsToUpdate: Prisma.MenuItemUpdateInput[],
+  itemsToDelete: string[],
+) {
+  try {
+    console.log("Updating menu items...");
+    console.log("Items to create:", itemsToCreate);
+    console.log("Items to update:", itemsToUpdate);
+    console.log("Items to delete:", itemsToDelete);
+
+    // メニューアイテムの更新
+    await prisma.menuItem.createMany({
+      data: itemsToCreate
+    });
+    await prisma.$transaction(itemsToUpdate.map((data) =>
+      prisma.menuItem.update({ data, where: { id: data.id as string } })
+    ));
+    await prisma.menuItem.deleteMany({
+      where: {
+        id: {
+          in: itemsToDelete,
+        },
+      },
+    });
+
+  }
+  catch (error) {
+    console.error("Error updating menu item:", error);
+    return "エラー: " + error;
+  }
+}
+
+export async function deleteMenuItem(menuItemId: string) {
+  try {
+    // メニューアイテムの削除
+    await prisma.menuItem.delete({
+      where: { id: menuItemId },
+    });
+  } catch (error) {
+    console.error("Error deleting menu item:", error);
+    return "エラー: " + error;
+  }
+}
