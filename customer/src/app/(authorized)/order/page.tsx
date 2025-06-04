@@ -1,6 +1,7 @@
 import { AddToCartButton } from "@/components/addToCartButton";
 import { CartPopup } from "@/components/cartPopup";
 import { getMenuItems } from "@/libs/db/menuItem";
+import Image from "next/image";
 
 export default async function MyPage() {
   const data = await getMenuItems();
@@ -10,17 +11,30 @@ export default async function MyPage() {
       <CartPopup />
       <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl">
         {data?.map((item) => (
-          <div className='flex flex-col' key={item.id}>
-            <div className='bg-foreground/10 rounded-tl-md rounded-tr-md px-2 py-1.5 text-sm'>
-              {item.name}
+          <div className='relative flex flex-col justify-end aspect-square overflow-hidden bg-foreground/10 rounded-md' key={item.id}>
+            {item.imageUrl && (
+              <Image
+                width={500}
+                height={500}
+                loading='lazy'
+                src={item.imageUrl}
+                alt={item.description ? item.description : 'image of ' + item.name}
+                className='absolute z-0 top-0 w-full h-auto object-cover'
+              />
+            )}
+            <div className="flex flex-col justify-end h-full z-10">
+              <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
+                <div className='flex items-center justify-between text-lg font-semibold py-1.5'>
+                  <span>{item.name}</span>
+                  <AddToCartButton item={item} className="border border-white w-fit" />
+                </div>
+                <p>￥{item.price}</p>
+                <p>{item.description}</p>
+              </div>
             </div>
-            <pre className='bg-foreground/5 rounded-bl-md rounded-br-md p-2 text-xs'>
-              {JSON.stringify(item, null, 1)}
-            </pre>
-            <AddToCartButton item={item} />
           </div>)
         )}
       </div>
-    </main>
+    </main >
   );
 }

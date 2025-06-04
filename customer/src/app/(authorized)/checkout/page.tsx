@@ -2,6 +2,7 @@
 import { order } from "@/libs/actions/orderActions";
 import { useCartStore } from "@/providers/cart-store-provider";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useActionState } from "react";
 
 export default function MyPage() {
@@ -14,28 +15,40 @@ export default function MyPage() {
       <h1 className='my-6 text-center text-2xl'>Confirm Your Order</h1>
       <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl">
         {currentCart?.map((entry) => (
-          <div className='flex flex-col' key={entry.menuItemId}>
-            <div className='bg-foreground/10 rounded-tl-md rounded-tr-md px-2 py-1.5 text-sm'>
-              {entry.name}
-            </div>
-            <pre className='bg-foreground/5 rounded-bl-md rounded-br-md p-2 text-xs'>
-              {JSON.stringify(entry.menuItem, null, 1)}
-            </pre>
-            <div className="flex items-center">
-              <p className="text-sm text-gray-600">数量: {entry.quantity}</p>
-              <button
-                className="m-2 bg-foreground/10 px-4 py-2 rounded hover:bg-foreground/5"
-                onClick={() => addItem(entry.menuItem)}
-              >
-                +
-              </button>
-              <button
-                className="m-2 bg-foreground/10 px-4 py-2 rounded hover:bg-foreground/5"
-                onClick={() => removeItem(entry.menuItem)}
-              >
-                -
-              </button>
-              <p className="text-sm text-gray-600">￥{entry.subtotal}</p>
+          <div className='relative flex flex-col justify-end aspect-square overflow-hidden bg-foreground/10 rounded-md' key={entry.menuItemId}>
+            {entry.menuItem.imageUrl && (
+              <Image
+                width={500}
+                height={500}
+                loading='lazy'
+                src={entry.menuItem.imageUrl}
+                alt={entry.menuItem.description ? entry.menuItem.description : 'image of ' + entry.menuItem.name}
+                className='absolute z-0 top-0 w-full h-auto object-cover'
+              />
+            )}
+            <div className="flex flex-col justify-end h-full z-10">
+              <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
+                <div className='flex items-center justify-between text-lg font-semibold py-1.5'>
+                  <span>{entry.name}</span>
+                  <div className="flex items-center gap-2">
+                    <p>数量: {entry.quantity}</p>
+                    <button
+                      className="px-4 py-2 rounded border border-white hover:cursor-pointer"
+                      onClick={() => addItem(entry.menuItem)}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded border border-white hover:cursor-pointer"
+                      onClick={() => removeItem(entry.menuItem)}
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+                <p>￥{entry.menuItem.price} / 小計 ￥{entry.subtotal}</p>
+                <p>{entry.menuItem.description}</p>
+              </div>
             </div>
           </div>)
         )}
