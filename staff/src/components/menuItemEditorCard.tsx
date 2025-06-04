@@ -83,20 +83,16 @@ export function MenuItemEditorCard(props: {
             className='ml-2'
           />
         </p>
-        <input
-          type="text"
-          value={menuItem.imageUrl || ''}
-          onChange={(e) => {
+        <input type='file' onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
             dispatch({
-              type: 'update',
+              type: 'uploadImage',
               index: index,
-              menuItem: {
-                imageUrl: e.target.value
-              }
-            })
-          }}
-          className='w-full mb-2 p-1 border border-gray-300 rounded'
-        />
+              image: file
+            });
+          }
+        }} />
       </div>
     </div>
   );
