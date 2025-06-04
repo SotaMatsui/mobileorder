@@ -2,7 +2,7 @@
 import { Prisma } from '@prisma/client';
 import { useReducer, useState, useTransition } from 'react';
 import { MenuItemEditorCard } from './menuItemEditorCard';
-import { uploadImage, upsertOrDeleteMenuItems } from '@/libs/actions/orderActions';
+import { updateMenu } from '@/libs/actions/menuActions';
 import { createId } from '@paralleldrive/cuid2';
 
 export type ReducerAction =
@@ -16,7 +16,7 @@ export type ReducerAction =
   | { type: 'remove', index: number }
   | { type: 'uploadImage', index: number, image: File };
 
-type MenuItemEditorEntry = Prisma.MenuItemCreateInput & { image?: File };
+export type MenuItemEditorEntry = Prisma.MenuItemCreateInput & { image?: File };
 
 export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] }) {
   const { initialMenuItems } = props;
@@ -28,6 +28,7 @@ export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] 
     isAvailable: true,
   };
   const reducer = (state: MenuItemEditorEntry[], action: ReducerAction): MenuItemEditorEntry[] => {
+    console.log('Reducer called! action:', action);
     switch (action.type) {
       // 現在の配列の後ろにオブジェクトを一つ追加する
       case 'add':
@@ -64,99 +65,18 @@ export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] 
     }
   }
   const [itemsToDelete, setItemsToDelete] = useState<string[]>([]);
-  const [isConnectingDB, startDBTransition] = useTransition();
-  const [isUploadingImages, startImageUploadTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const [menuItemsState, dispatch] = useReducer(reducer, initialMenuItems);
 
-  const handleSave = async () => {
-    type ImageUpload = {
-      menuItemId: string,
-      image: File,
-      index: number,
-      status: 'success' | 'error' | 'pending'
-    };
-    const itemsToCreate: Prisma.MenuItemCreateInput[] = [];
-    const itemsToUpdate: Prisma.MenuItemUpdateInput[] = [];
-    const imagesToUpload: ImageUpload[] = [];
-
-    /// 1. アップロードする画像の仕分け
-    for (let i = 0; i < menuItemsState.length; i++) {
-      const entry = menuItemsState[i];
-
-      // 画像がある場合はアップロード対象に追加
-      if (entry.image != undefined) {
-        // 画像のサイズチェック（5MB以下）
-        if (entry.image!.size > 5 * 1024 * 1024 /* 5MB */) {
-          alert(`${entry.name}の画像アップロードをスキップしました。\n
-            画像のサイズが大きすぎます。5MB以下の画像を選択してください。`);
-          return;
-        }
-        imagesToUpload.push({
-          menuItemId: entry.id!,
-          image: entry.image,
-          index: i,
-          status: 'pending'
-        });
+  const handleSave = () => {
+    startTransition(async () => {
+      const result = await updateMenu(menuItemsState)
+      if (result.success) {
+        console.log('メニューの更新に成功しました');
       }
-    };
-
-    ///  2. 画像のアップロード → 3. 画像のURLを設定
-    if (imagesToUpload.length > 0) {
-      startImageUploadTransition(() => {
-        imagesToUpload.forEach(async (upload) => {
-          try {
-            // 画像をアップロード
-            uploadImage(upload.menuItemId, upload.image)
-              .then(() => {
-                console.log(`画像のアップロードに成功しました: ${upload.menuItemId}`);
-
-                // アップロード後、画像URLを設定（404防止）
-                dispatch({
-                  type: 'update',
-                  index: upload.index,
-                  menuItem: { imageUrl: `https://gauvehvvywdffzavofsf.supabase.co/storage/v1/object/public/menu-images/public/${upload.menuItemId}` }
-                });
-              })
-          } catch (error) {
-            //TODO: 表示の仕方を変える
-            alert(`
-              画像のアップロードに失敗しました\n
-              id: ${upload.menuItemId}\n
-              エラー: ${error}`);
-          }
-        });
-      });
-    }
-
-    /// 4. image削除 → 5. MenuItem仕分け
-    for (let i = 0; i < menuItemsState.length; i++) {
-      // Prisaの入力型に合わせて、imageフィールドを削除
-      delete menuItemsState[i].image
-      const createItem = menuItemsState[i] as Prisma.MenuItemCreateInput;
-
-      // menuItemをupdateかcreateに仕分け
-      if (createItem.createdAt === undefined) {
-        itemsToCreate.push(createItem);
-      } else {
-        itemsToUpdate.push(createItem as Prisma.MenuItemUpdateInput);
+      else {
+        console.error('メニューの更新に失敗しました:', result.error);
       }
-    };
-
-    /// 6. PrismaからDBを更新
-    startDBTransition(() => {
-      upsertOrDeleteMenuItems(
-        itemsToCreate,
-        itemsToUpdate,
-        itemsToDelete
-      ).then(() => {
-        // 成功時の処理
-        // TODO: 何かしら表示する
-        console.log('メニューアイテムの保存に成功しました');
-      }).catch((error) => {
-        // エラー時の処理
-        // TODO: 何かしら表示する
-        console.error('メニューアイテムの保存に失敗しました:', error);
-      });
     });
   }
 
@@ -173,10 +93,8 @@ export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] 
           onClick={handleSave}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
         >
-          {isUploadingImages ?
-            isConnectingDB ?
-              'メニュー情報を保存しています...'
-              : '画像をアップロードしています...'
+          {isPending ?
+            '保存中...'
             : '保存'}
         </button>
       </div>
