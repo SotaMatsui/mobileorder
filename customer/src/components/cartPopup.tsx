@@ -1,13 +1,24 @@
 'use client';
 import { useCartStore } from "@/providers/cart-store-provider";
 import Link from "next/link";
+import { useState } from "react";
 
 export function CartPopup() {
   const { currentCart, totalPrice, addItem, removeItem } = useCartStore((state) => state);
+  const [isHidden, setIsHidden] = useState(false);
   return (
-    <div className="fixed bottom-0 right-0 m-4 p-4 bg-background shadow-lg rounded-lg">
-      <h2 className="text-xl font-bold mb-2">Cart</h2>
-      <div>{currentCart.map((entry) => (
+    <div className="fixed z-20 bottom-0 w-full bg-background shadow-lg rounded-lg px-4 max-h-dvh overflow-y-auto">
+      <div className="flex justify-between items-center py-2 sticky top-0 bg-background">
+        <h2 className="" onClick={() => setIsHidden(!isHidden)}>ご注文 {isHidden ? '🔽' : '🔼'}</h2>
+        <p className="">計￥{totalPrice.toString()}</p>
+        <Link href='/checkout'>
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400 disabled:bg-foreground/20" disabled={currentCart.length === 0}>
+            注文する
+          </button>
+        </Link>
+      </div>
+      <div className={isHidden ? 'hidden' : 'block'}>{currentCart.map((entry) => (
         <div key={entry.menuItemId}>
           <p className="text-lg">{entry.name}</p>
           <p className="text-sm text-gray-600">￥{entry.price.toString()}</p>
@@ -26,15 +37,6 @@ export function CartPopup() {
           </button>
         </div>
       ))}</div>
-      <div className="mt-4">
-        <p className="text-lg font-bold">計￥{totalPrice.toString()}</p>
-      </div>
-      <Link href='/checkout'>
-        <button
-          className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400 disabled:bg-foreground/20" disabled={currentCart.length === 0}>
-          注文する
-        </button>
-      </Link>
     </div>
   )
 }
