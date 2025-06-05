@@ -4,6 +4,7 @@ import { useReducer, useState, useTransition } from 'react';
 import { MenuItemEditorCard } from './menuItemEditorCard';
 import { updateMenu } from '@/libs/actions/menuActions';
 import { createId } from '@paralleldrive/cuid2';
+import { Loader2, Plus, SaveAll } from 'lucide-react';
 
 export type ReducerAction =
   | { type: 'add' }
@@ -82,23 +83,23 @@ export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] 
 
   return (
     <>
-      <div className='flex justify-between items-center mb-4 gap-4'>
+      <div className='flex justify-start items-center mb-4 pb-4 border-b w-full gap-2'>
         <button
           onClick={() => dispatch({ type: 'add' })}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+          className='hover:bg-foreground/5 focus-visible:outline-offset-2 rounded-full p-2 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none'
         >
-          追加
+          <Plus className='size-5' />
         </button>
         <button
           onClick={handleSave}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+          className='hover:bg-foreground/5 focus-visible:outline-offset-2 rounded-full p-2 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none'
         >
-          {isPending ?
-            '保存中...'
-            : '保存'}
+          {!isPending ?
+            <SaveAll className='size-5' />
+            : <Loader2 className="animate-spin size-5" />}
         </button>
       </div>
-      <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl">
+      <div className="flex flex-wrap gap-4">
         {menuItemsState?.map((item, index) => (
           <MenuItemEditorCard key={item.id} menuItem={item} dispatch={dispatch} index={index} />)
         )}

@@ -1,15 +1,18 @@
 import { MenuItemEditor } from "@/components/menuItemEditor";
+import TitleBar from "@/components/titlebar";
 import { getMenuItems } from "@/libs/db/menuItem";
 
 export default async function MenuPage() {
   const data = await getMenuItems();
   return (
-    <main className='flex min-h-screen flex-col items-center px-4'>
-      <h1 className='my-6 text-center text-2xl'>Edit Menu</h1>
-      {data != null ?
-        <MenuItemEditor initialMenuItems={data} />
-        : <p>データの取得に失敗しました</p>
-      }
-    </main>
+    <div className="min-h-screen">
+      <TitleBar title="メニュー編集" />
+      <main className='flex min-h-screen flex-col items-center px-4'>
+        {data != null ?
+          <MenuItemEditor initialMenuItems={data} />
+          : <p>データの取得に失敗しました</p>
+        }
+      </main>
+    </div>
   );
 }
