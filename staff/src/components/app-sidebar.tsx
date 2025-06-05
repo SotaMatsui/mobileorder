@@ -1,4 +1,4 @@
-import { Home, LayoutDashboard, Settings, UtensilsIcon } from "lucide-react"
+import { LayoutDashboard, Settings, UtensilsIcon } from "lucide-react"
 
 import {
   Sidebar,

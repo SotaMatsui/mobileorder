@@ -1,7 +1,6 @@
 import { auth } from '@/auth';
 import { SignOutButton } from '@/components/signoutButton';
 import TitleBar from '@/components/titlebar';
-import Link from 'next/link';
 
 export default async function MyPage() {
   const session = await auth();
