@@ -1,23 +1,34 @@
-import { OrderItemCard } from '@/components/orderItemCard';
 import TitleBar from '@/components/titlebar';
 import { getOrders } from '@/libs/db/orders';
-import Link from 'next/link';
+import { columns, OrderColumn } from "./columns"
+import { DataTable } from "./data-table"
 
-export default async function DashboardPage() {
+
+async function getData(): Promise<OrderColumn[]> {
   const orders = await getOrders();
+  const flattendOrders: OrderColumn[] = [];
+  (orders ?? []).map((order) => {
+    order.orderItems.map((item) => {
+      flattendOrders.push({
+        status: order.status,
+        orderDate: order.orderDate,
+        quantity: item.quantity,
+        name: item.menuItem.name,
+        order: order
+      });
+    });
+  })
+  return flattendOrders
+}
+export default async function DashboardPage() {
+  const data = await getData()
   return (
     <div className='min-h-screen'>
-      <TitleBar title='ダッシュボード' />
+      <TitleBar title='注文ダッシュボード' />
       <main className='flex flex-col items-center'>
-        <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl">
-          {orders?.map((item) => <OrderItemCard key={item.id} order={item} />)}
+        <div className="container mx-auto p-10">
+          <DataTable columns={columns} data={data} />
         </div>
-        <Link
-          href='/'
-          className='bg-green-500 text-white rounded-lg px-8 py-2 mt-6 hover:bg-green-400 focus-visible:outline-offset-2'
-        >
-          ホーム
-        </Link>
       </main>
     </div>
   );
