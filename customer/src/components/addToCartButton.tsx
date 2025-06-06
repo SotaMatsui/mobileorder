@@ -2,16 +2,18 @@
 
 import { useCartStore } from "@/providers/cart-store-provider";
 import { MenuItem } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { ListPlusIcon } from "lucide-react";
 
 export function AddToCartButton({ item, className }: { item: MenuItem, className?: string }) {
   const { addItem } = useCartStore((state) => state);
 
   return (
-    <button
-      className={`rounded-lg px-8 py-2 focus-visible:outline-offset-2 hover:cursor-pointer ${className}`}
+    <Button
+      className={className}
       onClick={() => { addItem(item) }}
     >
-      カートに追加
-    </button>
+      注文リストに追加<ListPlusIcon />
+    </Button>
   )
 }

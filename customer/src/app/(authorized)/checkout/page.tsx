@@ -1,6 +1,8 @@
 'use client';
+import { Button } from "@/components/ui/button";
 import { order } from "@/libs/actions/orderActions";
 import { useCartStore } from "@/providers/cart-store-provider";
+import { ArrowLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useActionState } from "react";
@@ -11,9 +13,20 @@ export default function MyPage() {
   const orderBinded = order.bind(null, currentCart.map((entry) => entry.toOrderItem()), session?.user?.id || '');
   const [message, action, isPending] = useActionState(orderBinded, undefined);
   return (
-    <main className='flex min-h-screen flex-col items-center px-4'>
-      <h1 className='my-6 text-center text-2xl'>Confirm Your Order</h1>
-      <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl">
+    <main className='flex min-h-screen flex-col items-center'>
+      <div className="flex justify-start w-full items-center gap-4">
+        <div>
+          <Button
+            variant="ghost"
+            onClick={() => window.history.back()}
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+        </div>
+        <h1 className='my-6 text-center text-2xl'>ご注文の確認</h1>
+        <div></div>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl px-4">
         {currentCart?.map((entry) => (
           <div className='relative flex flex-col justify-end aspect-square overflow-hidden bg-foreground/10 rounded-md' key={entry.menuItemId}>
             {entry.menuItem.imageUrl && (
@@ -28,22 +41,20 @@ export default function MyPage() {
             )}
             <div className="flex flex-col justify-end h-full z-10">
               <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
-                <div className='flex items-center justify-between text-lg font-semibold py-1.5'>
-                  <span>{entry.name}</span>
+                <div className='flex items-center justify-between py-1.5'>
+                  <span className="text-lg font-semibold">{entry.name}</span>
                   <div className="flex items-center gap-2">
                     <p>数量: {entry.quantity}</p>
-                    <button
-                      className="px-4 py-2 rounded border border-white hover:cursor-pointer"
+                    <Button
                       onClick={() => addItem(entry.menuItem)}
                     >
-                      +
-                    </button>
-                    <button
-                      className="px-4 py-2 rounded border border-white hover:cursor-pointer"
+                      <Plus className="size-4" />
+                    </Button>
+                    <Button
                       onClick={() => removeItem(entry.menuItem)}
                     >
-                      -
-                    </button>
+                      <Minus className="size-4" />
+                    </Button>
                   </div>
                 </div>
                 <p>￥{entry.menuItem.price} / 小計 ￥{entry.subtotal}</p>
@@ -58,12 +69,18 @@ export default function MyPage() {
       </div>
       {message != undefined ? <p className="bg-red-700 text-white px-4 py-2 rounded">{message}</p> : null}
       <form>
-        <button
-          className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400 disabled:bg-foreground/20"
+        <Button
+          type="submit"
           disabled={currentCart.length === 0 || isPending}
           formAction={action}>
-          {isPending ? '注文しています...' : '注文を確定する'}
-        </button>
+          {isPending ?
+            <>
+              <Loader2 className="animate-spin" />
+              <span>注文しています...</span>
+            </>
+            : '注文を確定する'
+          }
+        </Button>
       </form>
     </main>
   );
