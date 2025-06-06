@@ -1,4 +1,5 @@
 'use client';
+import { AppQuickMenuButton } from "@/components/quick-menu";
 import { Button } from "@/components/ui/button";
 import { order } from "@/libs/actions/orderActions";
 import { useCartStore } from "@/providers/cart-store-provider";
@@ -14,17 +15,19 @@ export default function MyPage() {
   const [message, action, isPending] = useActionState(orderBinded, undefined);
   return (
     <main className='flex min-h-screen flex-col items-center'>
-      <div className="flex justify-start w-full items-center gap-4">
-        <div>
+      <div className="flex justify-between w-full items-center gap-4">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             onClick={() => window.history.back()}
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft />
           </Button>
+          <h1 className='my-6 text-center text-xl'>ご注文の確認</h1>
         </div>
-        <h1 className='my-6 text-center text-2xl'>ご注文の確認</h1>
-        <div></div>
+        <div className="flex items-center gap-2">
+          <AppQuickMenuButton />
+        </div>
       </div>
       <div className="grid lg:grid-cols-2 gap-4 w-full max-w-4xl px-4">
         {currentCart?.map((entry) => (
@@ -40,18 +43,20 @@ export default function MyPage() {
               />
             )}
             <div className="flex flex-col justify-end h-full z-10">
-              <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
+              <div className="text-white bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
                 <div className='flex items-center justify-between py-1.5'>
                   <span className="text-lg font-semibold">{entry.name}</span>
                   <div className="flex items-center gap-2">
                     <p>数量: {entry.quantity}</p>
                     <Button
                       onClick={() => addItem(entry.menuItem)}
+                      className="dark:bg-background dark:text-foreground"
                     >
                       <Plus className="size-4" />
                     </Button>
                     <Button
                       onClick={() => removeItem(entry.menuItem)}
+                      className="dark:bg-background dark:text-foreground"
                     >
                       <Minus className="size-4" />
                     </Button>

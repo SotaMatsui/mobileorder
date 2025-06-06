@@ -1,3 +1,5 @@
+import { ThemeToggle } from "@/components/theme-toggle";
+
 export default function TitleBar({
   title,
   children
@@ -11,6 +13,7 @@ export default function TitleBar({
         <h1 className="text-lg font-semibold">{title}</h1>
         <div className="flex items-center space-x-4">
           {children}
+          <ThemeToggle />
         </div>
       </div>
       <div className="w-full h-6 rounded-tl-full bg-background"></div>

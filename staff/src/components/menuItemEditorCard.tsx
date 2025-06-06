@@ -25,7 +25,7 @@ export function MenuItemEditorCard(props: {
 
   return (
     <div style={{ '--image-url': `url(${menuItem.imageUrl})` } as React.CSSProperties}
-      className={'flex flex-col max-w-sm text-background bg-linear-to-b bg-[image:linear-gradient(var(--tw-gradient-stops)),_var(--image-url)] from-black/50 to-black/50 bg-cover rounded-md'}>
+      className={'flex flex-col max-w-sm text-white dark:bg-foreground/20 bg-linear-to-b bg-[image:linear-gradient(var(--tw-gradient-stops)),_var(--image-url)] from-black/50 to-black/50 bg-cover rounded-md'}>
       <div className='flex justify-end items-center px-2 py-1.5'>
         <div>
           <Dialog>

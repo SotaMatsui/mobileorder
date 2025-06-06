@@ -10,7 +10,7 @@ export function AddToCartButton({ item, className }: { item: MenuItem, className
 
   return (
     <Button
-      className={className}
+      className={`dark:bg-background dark:text-foreground ${className}`}
       onClick={() => { addItem(item) }}
     >
       注文リストに追加<ListPlusIcon />
