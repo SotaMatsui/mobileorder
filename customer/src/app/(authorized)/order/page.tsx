@@ -25,7 +25,7 @@ export default async function MyPage() {
                 />
               )}
               <div className="flex flex-col justify-end h-full z-10">
-                <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
+                <div className="text-white bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
                   <div className='flex items-center justify-between text-lg font-semibold py-1.5'>
                     <span>{item.name}</span>
                     <AddToCartButton item={item} />

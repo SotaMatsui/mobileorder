@@ -40,18 +40,20 @@ export default function MyPage() {
               />
             )}
             <div className="flex flex-col justify-end h-full z-10">
-              <div className="text-background bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
+              <div className="text-white bg-gradient-to-b from-transparent to-black pt-16 px-4 pb-6">
                 <div className='flex items-center justify-between py-1.5'>
                   <span className="text-lg font-semibold">{entry.name}</span>
                   <div className="flex items-center gap-2">
                     <p>数量: {entry.quantity}</p>
                     <Button
                       onClick={() => addItem(entry.menuItem)}
+                      className="dark:bg-background dark:text-foreground"
                     >
                       <Plus className="size-4" />
                     </Button>
                     <Button
                       onClick={() => removeItem(entry.menuItem)}
+                      className="dark:bg-background dark:text-foreground"
                     >
                       <Minus className="size-4" />
                     </Button>
