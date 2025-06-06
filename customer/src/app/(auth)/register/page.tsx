@@ -1,27 +1,37 @@
 'use client';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { register } from "@/libs/actions/authActions";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [message, action, isPending] = useActionState(register, undefined);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 h-screen">
-      <h1 className="text-2xl font-medium">ユーザー登録</h1>
-      <form action={action} className="flex flex-col gap-4 p-4  border border-foreground/10 rounded-lg">
+    <div className="flex flex-col items-start justify-center gap-4 h-screen px-4">
+      <h1 className="text-2xl font-medium">新規登録</h1>
+      <form action={action} className="flex flex-col gap-4 py-4 w-full">
         {message != undefined ? <p className="bg-red-700 text-white px-4 py-2 rounded">{message}</p> : null}
-        <label htmlFor="email">
+        <Label htmlFor="email">
           メールアドレス
-        </label>
-        <input name="email" id="email" type="email" autoComplete="email" className="bg-background border border-foreground/10 px-4 py-2 rounded" />
-        <label htmlFor="password">
+        </Label>
+        <Input name="email" id="email" type="email" autoComplete="email" />
+        <Label htmlFor="password">
           パスワード
-        </label>
-        <input name="password" id="password" type="password" autoComplete="new-password" className="bg-background border border-foreground/10 px-4 py-2 rounded" />
-        <button type="submit" value="Sign In" className="bg-black text-white px-4 py-2 rounded">
-          {isPending ? '登録しています...' : '登録'}
-        </button>
+        </Label>
+        <Input name="password" id="password" type="password" autoComplete="new-password" />
+        <Button type="submit" value="Sign In" disabled={isPending} className="w-full">
+          {isPending ?
+            <><Loader2 className="animate-spin" />ログインしています...</>
+            : 'ログイン'}
+        </Button>
       </form>
+      <Link href='/login'>
+        <Button variant='link' className="px-0">ご登録済みですか？ログインはこちら</Button>
+      </Link>
     </div>
   )
 }
