@@ -2,7 +2,7 @@ import { prisma } from '@/libs/db/prisma';
 
 export const getOrders = async () => {
   try {
-    const data = await prisma.order.findMany({ include: { orderItems: { include: { menuItem: true } } } });
+    const data = await prisma.order.findMany({ include: { menuItem: true } });
     return data;
 
   } catch (error) {

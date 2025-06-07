@@ -13,21 +13,16 @@ export async function order(cart: CartOrderItem[], uid: string) {
     }
 
     // 注文データを作成
-    const orderData: Prisma.OrderCreateInput = {
-      customer: { connect: { id: uid } },
-      orderItems: {
-        createMany: {
-          data: cart.map(item => ({
-            menuItemId: item.menuItemId,
-            quantity: item.quantity
-          } satisfies Prisma.OrderItemCreateManyOrderInput)),
-        }
-      },
-      totalAmount: cart.reduce((sum, item) => sum + item.quantity, 0),
-    }
-    await prisma.order.create({
-      data: orderData,
-    })
+    const orderDatas: Prisma.OrderCreateManyInput[] =
+      cart.map(item => ({
+        menuItemId: item.menuItemId,
+        customerId: uid,
+        quantity: item.quantity
+      } satisfies Prisma.OrderCreateManyInput));
+
+    await prisma.order.createMany({
+      data: orderDatas,
+    });
 
   } catch (error) {
     return "エラー: " + error;

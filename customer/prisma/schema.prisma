@@ -28,15 +28,15 @@ model Session {
 }
 
 model MenuItem {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String?
   price       Int
   imageUrl    String?
-  isAvailable Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
 }
 
 model Staff {
@@ -48,36 +48,23 @@ model Staff {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  customerId  String
-  totalAmount Int
-  status      OrderStatus @default(PENDING)
-  orderDate   DateTime    @default(now())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  customer    Customer    @relation(fields: [customerId], references: [id])
-  orderItems  OrderItem[]
-
-  @@index([customerId])
-}
-
-model OrderItem {
-  id         String   @id @default(cuid())
-  orderId    String
+  id         String      @id @default(cuid())
+  customerId String
   menuItemId String
   quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  orderDate  DateTime    @default(now())
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  menuItem   MenuItem    @relation(fields: [menuItemId], references: [id])
 
-  @@index([orderId])
+  @@index([customerId])
   @@index([menuItemId])
 }
 
 enum OrderStatus {
   PENDING
-  CONFIRMED
   PREPARING
   READY
   DELIVERED

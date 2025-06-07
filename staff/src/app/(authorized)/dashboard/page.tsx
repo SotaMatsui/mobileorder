@@ -8,14 +8,12 @@ async function getData(): Promise<OrderColumn[]> {
   const orders = await getOrders();
   const flattendOrders: OrderColumn[] = [];
   (orders ?? []).map((order) => {
-    order.orderItems.map((item) => {
-      flattendOrders.push({
-        status: order.status,
-        orderDate: order.orderDate,
-        quantity: item.quantity,
-        name: item.menuItem.name,
-        order: order
-      });
+    flattendOrders.push({
+      status: order.status,
+      orderDate: order.orderDate,
+      quantity: order.quantity,
+      name: order.menuItem.name,
+      order: order
     });
   })
   return flattendOrders
