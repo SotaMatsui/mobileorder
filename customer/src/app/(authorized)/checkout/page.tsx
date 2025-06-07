@@ -1,17 +1,19 @@
 'use client';
 import { AppQuickMenuButton } from "@/components/quick-menu";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { order } from "@/libs/actions/orderActions";
 import { useCartStore } from "@/providers/cart-store-provider";
 import { ArrowLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 export default function MyPage() {
   const { data: session } = useSession();
   const { currentCart, totalPrice, addItem, removeItem } = useCartStore((state) => state);
-  const orderBinded = order.bind(null, currentCart.map((entry) => entry.toOrderItem()), session?.user?.id || '');
+  const [tableNumber, setTableNumber] = useState(0);
+  const orderBinded = order.bind(null, currentCart.map((entry) => entry.toOrderItem()), session?.user?.id || '', tableNumber);
   const [message, action, isPending] = useActionState(orderBinded, undefined);
   return (
     <main className='flex min-h-screen flex-col items-center'>
@@ -74,9 +76,24 @@ export default function MyPage() {
       </div>
       {message != undefined ? <p className="bg-red-700 text-white px-4 py-2 rounded">{message}</p> : null}
       <form>
+        <Input
+          type="number"
+          placeholder="テーブル番号"
+          value={tableNumber || ''}
+          onChange={(e) => {
+            if (isNaN(parseInt(e.target.value, 10)) || parseInt(e.target.value, 10) < 1 || parseInt(e.target.value, 10) > 100) {
+              setTableNumber(0);
+              return;
+            }
+            setTableNumber(parseInt(e.target.value, 10));
+          }}
+          className="my-4"
+          min={1}
+          max={100}
+        />
         <Button
           type="submit"
-          disabled={currentCart.length === 0 || isPending}
+          disabled={currentCart.length === 0 || isPending || tableNumber === null}
           formAction={action}>
           {isPending ?
             <>

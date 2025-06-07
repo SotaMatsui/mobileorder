@@ -5,7 +5,7 @@ import { OrderItem as CartOrderItem } from '@/models/cart-entry';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/libs/db/prisma';
 
-export async function order(cart: CartOrderItem[], uid: string) {
+export async function order(cart: CartOrderItem[], uid: string, tableNumber: number) {
   try {
     // カートが空でないことを確認
     if (cart.length === 0) {
@@ -13,21 +13,17 @@ export async function order(cart: CartOrderItem[], uid: string) {
     }
 
     // 注文データを作成
-    const orderData: Prisma.OrderCreateInput = {
-      customer: { connect: { id: uid } },
-      orderItems: {
-        createMany: {
-          data: cart.map(item => ({
-            menuItemId: item.menuItemId,
-            quantity: item.quantity
-          } satisfies Prisma.OrderItemCreateManyOrderInput)),
-        }
-      },
-      totalAmount: cart.reduce((sum, item) => sum + item.quantity, 0),
-    }
-    await prisma.order.create({
-      data: orderData,
-    })
+    const orderDatas: Prisma.OrderCreateManyInput[] =
+      cart.map(item => ({
+        menuItemId: item.menuItemId,
+        customerId: uid,
+        quantity: item.quantity,
+        tableNumber: tableNumber,
+      } satisfies Prisma.OrderCreateManyInput));
+
+    await prisma.order.createMany({
+      data: orderDatas,
+    });
 
   } catch (error) {
     return "エラー: " + error;
