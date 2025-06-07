@@ -5,7 +5,7 @@ import { OrderItem as CartOrderItem } from '@/models/cart-entry';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/libs/db/prisma';
 
-export async function order(cart: CartOrderItem[], uid: string) {
+export async function order(cart: CartOrderItem[], uid: string, tableNumber: number) {
   try {
     // カートが空でないことを確認
     if (cart.length === 0) {
@@ -17,7 +17,8 @@ export async function order(cart: CartOrderItem[], uid: string) {
       cart.map(item => ({
         menuItemId: item.menuItemId,
         customerId: uid,
-        quantity: item.quantity
+        quantity: item.quantity,
+        tableNumber: tableNumber,
       } satisfies Prisma.OrderCreateManyInput));
 
     await prisma.order.createMany({

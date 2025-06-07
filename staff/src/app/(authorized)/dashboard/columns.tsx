@@ -11,9 +11,26 @@ export type OrderColumn = {
   quantity: number
   name: string,
   order: Order
+  tableNumber: number
 }
 
 export const columns: ColumnDef<OrderColumn>[] = [
+  {
+    accessorKey: "name",
+    header: "商品名",
+  },
+  {
+    accessorKey: "quantity",
+    header: "数量",
+  },
+  {
+    accessorKey: "orderDate",
+    header: "オーダー日時",
+  },
+  {
+    accessorKey: "tableNumber",
+    header: "テーブル番号",
+  },
   {
     accessorKey: "status",
     header: "状態",
@@ -25,17 +42,5 @@ export const columns: ColumnDef<OrderColumn>[] = [
         />
       )
     },
-  },
-  {
-    accessorKey: "orderDate",
-    header: "オーダー日時",
-  },
-  {
-    accessorKey: "name",
-    header: "商品名",
-  },
-  {
-    accessorKey: "quantity",
-    header: "数量",
   },
 ]

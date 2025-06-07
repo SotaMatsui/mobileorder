@@ -13,7 +13,8 @@ async function getData(): Promise<OrderColumn[]> {
       orderDate: order.orderDate,
       quantity: order.quantity,
       name: order.menuItem.name,
-      order: order
+      order: order,
+      tableNumber: order.tableNumber,
     });
   })
   return flattendOrders
