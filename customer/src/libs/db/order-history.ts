@@ -1,6 +1,6 @@
 import { prisma } from '@/libs/db/prisma';
 
-export const getOrderHistory = async (customerId: string) => {
+export const getOrderHistory = async (userId: string) => {
   try {
     const data = await prisma.order.findMany({
       include: {
@@ -8,7 +8,7 @@ export const getOrderHistory = async (customerId: string) => {
       },
       take: 10, // Limit to the last 10 orders
       where: {
-        customerId: customerId,
+        userId: userId,
       },
     });
     return data;

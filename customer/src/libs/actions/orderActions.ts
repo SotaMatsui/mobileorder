@@ -16,7 +16,7 @@ export async function order(cart: CartOrderItem[], uid: string, tableNumber: num
     const orderDatas: Prisma.OrderCreateManyInput[] =
       cart.map(item => ({
         menuItemId: item.menuItemId,
-        customerId: uid,
+        userId: uid,
         quantity: item.quantity,
         tableNumber: tableNumber,
       } satisfies Prisma.OrderCreateManyInput));

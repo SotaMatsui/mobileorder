@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/libs/actions/authActions";
 import { Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useActionState } from "react";
 
@@ -28,6 +29,7 @@ export default function LoginPage() {
             <><Loader2 className="animate-spin" />ログインしています...</>
             : 'ログイン'}
         </Button>
+        <Button type="button" variant='secondary' onClick={() => signIn("google")}>Googleでログイン</Button>
       </form>
       <Link href='/register'><Button variant='link' className="px-0">ご利用は初めてですか？新規登録はこちら</Button></Link>
     </div>

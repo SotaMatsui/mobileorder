@@ -1,11 +1,12 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
 import { authConfig } from "@/auth.config"
 import { signInSchema } from "./libs/zod/schemas";
-import { getCustomerByEmail } from "./libs/db/user";
+import { getUserByEmail } from "./libs/db/user";
 import bcrypt from "bcrypt";
-// import { PrismaAdapter } from "@auth/prisma-adapter";
-// import { prisma } from "@/libs/db/prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/libs/db/prisma";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   /*
@@ -13,8 +14,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   * OIDCの実装は必須要件ではないので、あとで原因を調査
   * p.session.findUniqueがこけているらしい
   * ここら辺のスキーマを調整？
-  // adapter: PrismaAdapter(prisma),
+  * ↓
+  * Prismaがエッジ環境に対応していないのでJWTのみにするしかないらしい
   */
+  session: { strategy: "jwt" },
+  adapter: PrismaAdapter(prisma),
   ...authConfig,
   providers: [
     Credentials({
@@ -44,7 +48,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          const user = await getCustomerByEmail(email);
+          const user = await getUserByEmail(email);
           console.log("User found:", user);
 
           if (!user || !user.password) return null;
@@ -58,5 +62,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return null;
       },
     }),
+    Google,
   ],
 })
