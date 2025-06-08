@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/libs/actions/authActions";
 import { Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useActionState } from "react";
 
@@ -25,9 +26,10 @@ export default function LoginPage() {
         <Input name="password" id="password" type="password" autoComplete="new-password" />
         <Button type="submit" value="Sign In" disabled={isPending} className="w-full">
           {isPending ?
-            <><Loader2 className="animate-spin" />ログインしています...</>
-            : 'ログイン'}
+            <><Loader2 className="animaïïte-spin" />登録しています...</>
+            : 'ユーザー登録'}
         </Button>
+        <Button type="button" variant='secondary' onClick={() => signIn("google")}>Googleでログイン</Button>
       </form>
       <Link href='/login'>
         <Button variant='link' className="px-0">ご登録済みですか？ログインはこちら</Button>
