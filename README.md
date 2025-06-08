@@ -1,7 +1,17 @@
 # アンビエントナビエンジニア長期インターン技術課題
 ## 環境構築
- - `cd customer && npm i`
- - `cd staff && npm i`
+ - `npm i`
+ - `npx auth secret`
+ - envファイルに各URLを設定
+```env.local
+AUTH_SECRET=[npx auth secretで追加されるランダム文字列] # Added by `npx auth`. Read more: https://cli.authjs.dev
+AUTH_GOOGLE_ID=[GoogleAuthPlatformのクライアントID]
+AUTH_GOOGLE_SECRET=[GoogleAuthPlatformのクライアントシークレット]
+DATABASE_URL=[SupabasePostgresのデータベースURL]
+DIRECT_URL=[SupabasePostgresのマイグレーション用ダイレクトURL]
+SUPABASE_URL="https://gauvehvvywdffzavofsf.supabase.co"
+SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhdXZlaHZ2eXdkZmZ6YXZvZnNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NTQ2NjMsImV4cCI6MjA2NDUzMDY2M30.TUcWTBYw2AaCsWPnqRBfpjkYEvHeS40zWj2g6P_R74s"
+```
 ## 技術的な工夫点
  - `Auth.js`を用いてシンプルかつセキュアに認証・認可を実装しました
  - `shadcn/ui`でUIデザイン統一とクオリティ向上を図っています
