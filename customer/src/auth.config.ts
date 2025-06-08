@@ -1,4 +1,4 @@
-import { Customer } from '@prisma/client';
+import { User } from '@prisma/client';
 import { NextAuthConfig } from 'next-auth';
 
 const publicRoutes = ['/'];
@@ -20,7 +20,7 @@ export const authConfig = {
       return token
     },
     session({ session, token }) {
-      session.user.id = token.id as Customer["id"]; // Ensure the id is a string
+      session.user.id = token.id as User['id']
       return session
     },
     authorized({ auth, request: { nextUrl } }) {

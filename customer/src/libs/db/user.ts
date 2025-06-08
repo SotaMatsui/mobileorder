@@ -1,8 +1,8 @@
 import { prisma } from '@/libs/db/prisma';
 
-export const getCustomerByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string) => {
   try {
-    const user = await prisma.customer.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
     return user;
 
   } catch (error) {
@@ -12,9 +12,9 @@ export const getCustomerByEmail = async (email: string) => {
   }
 };
 
-export const createCustomerByEmail = async (email: string, hashedPassword: string) => {
+export const createUserByEmail = async (email: string, hashedPassword: string) => {
   try {
-    const user = await prisma.customer.create({
+    const user = await prisma.user.create({
       data: {
         email: email,
         password: hashedPassword,

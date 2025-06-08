@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import bcrypt from 'bcrypt';
 import { AuthError } from 'next-auth';
 import { signIn, signOut } from '@/auth';
-import { createCustomerByEmail, getCustomerByEmail } from '@/libs/db/user';
+import { createUserByEmail, getUserByEmail } from '@/libs/db/user';
 import { signInSchema, signUpSchema } from '@/libs/zod/schemas';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
@@ -61,14 +61,14 @@ export async function register(prevState: string | undefined, formData: FormData
 
 
     // メルアドの重複チェック
-    const existingUser = await getCustomerByEmail(email);
+    const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return "このアカウントは既に存在します";
     }
 
     // DBに書き込んでログイン
     const hashedPassword = await bcrypt.hash(password, 10);
-    await createCustomerByEmail(email, hashedPassword)
+    await createUserByEmail(email, hashedPassword)
     await signIn("credentials", {
       email: email,
       password: password,
