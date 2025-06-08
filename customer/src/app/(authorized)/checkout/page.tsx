@@ -25,7 +25,7 @@ export default function MyPage() {
           >
             <ArrowLeft />
           </Button>
-          <h1 className='my-6 text-center text-xl'>ご注文の確認</h1>
+          <h1 className='my-4 text-center text-xl'>ご注文の確認</h1>
         </div>
         <div className="flex items-center gap-2">
           <AppQuickMenuButton />
