@@ -1,5 +1,7 @@
 'use client';
+import { Button } from "@/components/ui/button";
 import { register } from "@/libs/actions/authActions";
+import Link from "next/link";
 import { useActionState } from "react";
 
 export default function RegisterPage() {
@@ -22,6 +24,7 @@ export default function RegisterPage() {
           {isPending ? '登録しています...' : '登録'}
         </button>
       </form>
+      <Link href='/login'><Button variant='link' className="px-0">ログイン</Button></Link>
     </div>
   )
 }
