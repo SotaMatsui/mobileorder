@@ -2,6 +2,9 @@
 import { OrderStatusSelector } from "@/components/order-status-selector"
 import { Order } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
+import dayjs from "dayjs"
+import 'dayjs/locale/ja'
+import * as relativeTime from 'dayjs/plugin/relativeTime'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -25,7 +28,14 @@ export const columns: ColumnDef<OrderColumn>[] = [
   },
   {
     accessorKey: "orderDate",
-    header: "オーダー日時",
+    header: "注文からの経過時間",
+    cell: ({ row }) => {
+      dayjs.locale('ja');
+      dayjs.extend(relativeTime.default)
+
+      const orderCol = row.original
+      return dayjs(orderCol.orderDate).fromNow(false)
+    },
   },
   {
     accessorKey: "tableNumber",
@@ -35,10 +45,10 @@ export const columns: ColumnDef<OrderColumn>[] = [
     accessorKey: "status",
     header: "状態",
     cell: ({ row }) => {
-      const payment = row.original
+      const orderCol = row.original
       return (
         <OrderStatusSelector
-          order={payment.order}
+          order={orderCol.order}
         />
       )
     },
