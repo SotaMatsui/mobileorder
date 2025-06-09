@@ -5,6 +5,7 @@ import { MenuItemEditorCard } from './menuItemEditorCard';
 import { updateMenu } from '@/libs/actions/menuActions';
 import { createId } from '@paralleldrive/cuid2';
 import { Loader2, Plus, SaveAll } from 'lucide-react';
+import { supabase } from '@/libs/db/supabase';
 
 export type ReducerAction =
   | { type: 'add' }
@@ -69,16 +70,79 @@ export function MenuItemEditor(props: { initialMenuItems: MenuItemEditorEntry[] 
   const [isPending, startTransition] = useTransition();
   const [menuItemsState, dispatch] = useReducer(reducer, initialMenuItems);
 
+
+  async function _uploadImage(
+    menuItemId: string,
+    file: File
+  ) {
+    try {
+      if (!file) throw new Error('No file selected for upload')
+
+      const { error } = await supabase.storage
+        .from('menu-images')
+        .upload(`public/${menuItemId}`, file, { upsert: true })
+
+      if (error) throw error
+    } catch (e) {
+      throw e
+    }
+  }
+
   const handleSave = () => {
-    startTransition(async () => {
-      const result = await updateMenu(menuItemsState)
-      if (result.success) {
-        console.log('メニューの更新に成功しました');
+    console.log('menuItemsState:', menuItemsState);
+    type ImageUpload = {
+      menuItemId: string,
+      image: File,
+      index: number
+    };
+    const imagesToUpload: ImageUpload[] = [];
+
+    // 1. アップロードする画像の仕分け
+    for (let i = 0; i < menuItemsState.length; i++) {
+      const entry = menuItemsState[i];
+      // 画像がある場合はアップロード対象に追加
+      if (entry.image != undefined) {
+        imagesToUpload.push({
+          menuItemId: entry.id!,
+          image: entry.image,
+          index: i
+        });
       }
-      else {
-        console.error('メニューの更新に失敗しました:', result.error);
-      }
-    });
+    };
+
+    let menuItems: Prisma.MenuItemCreateManyInput[] = menuItemsState;
+
+    if (imagesToUpload.length > 0) {
+      Promise.all(
+        imagesToUpload.map(async (upload) => {
+          await _uploadImage(upload.menuItemId, upload.image)
+            .then(() => {
+              // アップロード後、画像URLを設定（404防止）
+              menuItems = reducer(menuItems,
+                {
+                  type: 'update',
+                  menuItem: {
+                    imageUrl:
+                      `https://gauvehvvywdffzavofsf.supabase.co/storage/v1/object/public/menu-images/public/${upload.menuItemId}`,
+                  },
+                  index: upload.index
+                });
+            })
+        })
+      ).then(() => {
+        // 4. image削除 → 5. MenuItem仕分け → 6. PrismaからDBを更新
+        startTransition(async () => {
+          await updateMenu(menuItems)
+        });
+      }).catch((error) => {
+        throw new Error(`画像のアップロードに失敗しました: ${error}`);
+      });
+    } else {
+      // 画像がない場合はそのままDBを更新
+      startTransition(async () => {
+        await updateMenu(menuItems)
+      });
+    }
   }
 
   return (
